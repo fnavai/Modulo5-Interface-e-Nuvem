@@ -1,70 +1,57 @@
 import streamlit as st
-import json
 import requests
-import time  # Importante para limpar o cache da URL
+import base64
+import json
 from style import aplicar_estilo
 
-# 1. Configuração e Estilo
-st.set_page_config(page_title="MVP - Integração GitHub", layout="wide")
 aplicar_estilo()
 
-st.title("Módulo 5 - Monitor Cloud (GitHub)")
+# CONFIGURAÇÃO DA API (Substitua os valores)
+USUARIO = "TheoCasella"
+REPO = "Modulo5-Perfis-Usuarios"
+CAMINHO_ARQUIVO = "src/data/contrato_perfil.json"
 
-# --- ATENÇÃO: Substitua pelo seu link real abaixo ---
-URL_GITHUB = "https://raw.githubusercontent.com/TheoCasella/Modulo5-Perfis-Usuarios/refs/heads/main/src/data/contrato_perfil.json"
+# URL da API de Conteúdo
+URL_API = f"https://api.github.com/repos/{USUARIO}/{REPO}/contents/{CAMINHO_ARQUIVO}"
 
-st.subheader("Status da Integração Remota:")
+st.title("Módulo 5 - Monitor Cloud (GitHub API)")
 
 
-def buscar_dados_github(url):
-    """
-    Busca os dados do GitHub adicionando um timestamp para
-    forçar o servidor a ignorar o cache do navegador/GitHub.
-    """
+def buscar_via_api():
     try:
-        # Adiciona um parâmetro aleatório no fim da URL para evitar cache
-        url_refresh = f"{url}?t={int(time.time())}"
-        response = requests.get(url_refresh)
+        response = requests.get(URL_API)
 
         if response.status_code == 200:
-            return response.json()
+            conteudo_json = response.json()
+
+            conteudo_base64 = conteudo_json['content']
+            conteudo_decodificado = base64.b64decode(conteudo_base64).decode('utf-8')
+
+            return json.loads(conteudo_decodificado)
         else:
-            st.error(f"Erro HTTP: {response.status_code}")
+            st.error(f"Erro na API: {response.status_code}")
             return None
     except Exception as e:
-        st.error(f"Erro de Conexão: {e}")
+        st.error(f"Falha na conexão: {e}")
         return None
 
 
-# Chamada direta (sem @st.cache_data para facilitar os testes agora)
-dados = buscar_dados_github(URL_GITHUB)
+if st.button("🔄 Sincronizar Agora (Via API)"):
+    dados = buscar_via_api()
+    if dados:
+        st.session_state['dados_api'] = dados
 
-if dados:
-    st.success("✅ Dados sincronizados via GitHub!")
-
-    st.markdown("---")
-    st.markdown("### 📊 Relatório de Integração Cloud")
+# Exibição dos dados
+if 'dados_api' in st.session_state:
+    dados = st.session_state['dados_api']
+    st.success("✅ Dados obtidos em tempo real via GitHub API!")
 
     col1, col2 = st.columns(2)
     with col1:
-        # Verificando se as chaves existem no JSON para não quebrar a tela
-        nome = dados.get("usuario_nome", "Não encontrado")
-        cargo = dados.get("usuario_cargo", "Não encontrado")
-
-        st.metric("Usuário Remoto", nome)
-        st.write(f"**Persona:** {cargo}")
+        st.metric("Especialista", dados.get("usuario_nome"))
+        st.write(f"**Cargo:** {dados.get('usuario_cargo')}")
 
     with col2:
-        st.write("**Origem:** Repositório Público")
-        st.info("Sincronização: GitHub Raw Content (Real-time)")
+        st.info("Conexão direta: API v3 GitHub")
 
-    st.write("**Diretriz Técnica Recebida:**")
-    diretriz = dados.get("diretriz_ia", "Sem diretriz disponível.")
-    st.code(diretriz, language="text")
-
-else:
-    st.error("❌ O arquivo não pôde ser lido ou o link está incorreto.")
-    st.info(f"Tentando acessar: {URL_GITHUB}")
-
-    if st.button("🔄 Forçar Sincronização"):
-        st.rerun()
+    st.code(dados.get("diretriz_ia"), language="text")

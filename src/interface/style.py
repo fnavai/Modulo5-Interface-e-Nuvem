@@ -5,36 +5,44 @@ def aplicar_estilo():
     st.markdown(
         """
         <style>
-        /* 1. Força a cor preta em todos os textos base e parágrafos */
+        /* 1. Fundo da página e texto geral */
+        .stApp {
+            background-color: #FFFFFF;
+        }
+
         html, body, [data-testid="stWidgetLabel"], .stMarkdown {
             color: #1C1C1C !important;
         }
 
-        /* 2. Título Principal (Módulo 5) */
-        .stTitle {
-            color: #000000 !important;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        /* 3. Subtítulos e Headers */
+        /* 2. Títulos e Subtítulos */
         h1, h2, h3, p {
             color: #1C1C1C !important;
         }
 
-        /* 4. Estilização específica para os números das métricas (Relatório) */
-        [data-testid="stMetricValue"] {
+        /* 3. CUSTOMIZAÇÃO DO BOTÃO (O seu quadrado preto) */
+        /* Mudando para fundo branco/cinza claro com texto preto */
+        div.stButton > button {
+            background-color: #F0F2F6 !important; /* Cinza bem claro */
+            color: #1C1C1C !important;           /* Texto Preto */
+            border: 1px solid #d3d3d3 !important; /* Borda cinza clara */
+            border-radius: 8px !important;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+        }
+
+        /* Efeito ao passar o mouse (Hover) */
+        div.stButton > button:hover {
+            background-color: #E0E0E0 !important; /* Cinza um pouco mais escuro */
+            border-color: #1C1C1C !important;
             color: #000000 !important;
         }
 
-        /* 5. Estilização dos rótulos das métricas */
+        /* 4. Estilo das métricas (Relatório) */
+        [data-testid="stMetricValue"] {
+            color: #000000 !important;
+        }
         [data-testid="stMetricLabel"] {
             color: #4F4F4F !important;
-        }
-
-        /* 6. Fundo da página (Cinza bem claro para contraste) */
-        .stApp {
-            background-color: #FFFFFF;
         }
         </style>
         """,
