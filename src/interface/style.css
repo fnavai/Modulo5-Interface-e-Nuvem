@@ -38,22 +38,23 @@ button:hover {
     background-color: #F0F7FC !important;
 }
 
-/* ===== BLOCO DO RESUMO DA IA (Estilo "Papel" ou "Clean") ===== */
-/* Se quiser que este bloco também seja claro, use estas cores: */
+/* ===== BLOCO DO RESUMO DA IA (Quadrado Azul Claro Arredondado) ===== */
 .bloco-ia {
-    background-color: #F0F2F6 !important; /* Cinza suave */
-    color: #1E1E1E !important;           /* Texto escuro */
-    padding: 20px;
-    border-radius: 10px;
-    border-left: 5px solid #1f77b4;      /* Detalhe em azul */
+    background-color: #E3F2FD !important; /* Cor azul claro */
+    color: #262730 !important;           /* Cor do texto (escuro para contraste) */
+    padding: 25px !important;            /* Espaçamento interno */
+    border-radius: 15px !important;      /* Bordas arredondadas */
+    border: none !important;             /* Remove qualquer borda lateral antiga */
     font-family: 'Courier New', monospace;
-    line-height: 1.5;
-    margin-top: 10px;
+    line-height: 1.6;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: block;                      /* Garante que ocupe a largura disponível */
 }
 
-/* Garante que links ou textos em negrito dentro do bloco fiquem legíveis */
+/* Garante que qualquer texto dentro da div siga a cor correta */
 .bloco-ia * {
-    color: #1E1E1E !important;
+    color: #262730 !important;
 }
 
 /* Linha divisória */

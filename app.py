@@ -69,21 +69,32 @@ elif st.session_state.step == "visualizacao":
 
     caminho_arquivo = mapa_arquivo.get(dados['cargo'])
 
+    # --- TELA 2: VISUALIZAÇÃO ---
+    # ... (seu código anterior)
+
     if caminho_arquivo and os.path.exists(caminho_arquivo):
         with open(caminho_arquivo, "r", encoding="utf-8") as f:
             resumo_bruto = f.read()
 
         conteudo_ia = resumo_bruto.split('"""')[1].strip() if '"""' in resumo_bruto else resumo_bruto.strip()
 
-        # APLICAÇÃO DA CLASSE CSS .bloco-ia
+        # FORÇANDO O ESTILO DIRETAMENTE NA TAG (INLINE)
+        estilo_inline = (
+            "background-color: #E3F2FD; "
+            "color: #262730; "
+            "padding: 25px; "
+            "border-radius: 15px; "
+            "font-family: 'Courier New', monospace; "
+            "line-height: 1.6; "
+            "margin: 20px 0; "
+            "display: block;"
+        )
+
         st.markdown(f"""
-            <div class="bloco-ia">
+            <div style="{estilo_inline}">
                 {conteudo_ia.replace('\n', '<br>')}
             </div>
         """, unsafe_allow_html=True)
-    else:
-        st.warning("Exibindo resumo padrão (Arquivo específico não encontrado).")
-        st.markdown(f'<div class="bloco-ia">{dados["resumo"]}</div>', unsafe_allow_html=True)
 
     if st.button("⬅️ Novo Cadastro"):
         st.session_state.step = "formulario"
