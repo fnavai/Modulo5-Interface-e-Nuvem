@@ -1,0 +1,62 @@
+/* ===== RESET PARA MODO CLARO ===== */
+.stApp {
+    background-color: #FFFFFF !important;
+}
+
+/* Força cores de texto para preto/cinza escuro */
+h1, h2, h3, h4, h5, h6, p, label, .stMarkdown {
+    color: #262730 !important;
+}
+
+/* ===== ENTRADAS DE DADOS (Inputs e Selects) ===== */
+/* Fundo cinza bem clarinho para os campos */
+div[data-baseweb="input"],
+div[data-baseweb="select"] > div {
+    background-color: #F8F9FB !important;
+    border: 1px solid #E6E9EF !important;
+    border-radius: 8px !important;
+}
+
+/* Cor do texto digitado */
+input {
+    color: #262730 !important;
+}
+
+/* ===== BOTÕES ===== */
+button[kind="secondaryFormSubmit"],
+button[kind="secondary"] {
+    background-color: #FFFFFF !important;
+    color: #262730 !important;
+    border: 1px solid #DCDFE3 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    border-color: #1f77b4 !important;
+    color: #1f77b4 !important;
+    background-color: #F0F7FC !important;
+}
+
+/* ===== BLOCO DO RESUMO DA IA (Estilo "Papel" ou "Clean") ===== */
+/* Se quiser que este bloco também seja claro, use estas cores: */
+.bloco-ia {
+    background-color: #F0F2F6 !important; /* Cinza suave */
+    color: #1E1E1E !important;           /* Texto escuro */
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #1f77b4;      /* Detalhe em azul */
+    font-family: 'Courier New', monospace;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+
+/* Garante que links ou textos em negrito dentro do bloco fiquem legíveis */
+.bloco-ia * {
+    color: #1E1E1E !important;
+}
+
+/* Linha divisória */
+hr {
+    border-top: 1px solid #E6E9EF !important;
+}
