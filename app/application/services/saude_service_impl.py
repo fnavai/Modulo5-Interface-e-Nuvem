@@ -8,7 +8,6 @@ from app.application.ports.driving.saude_service import SaudeService
 from app.application.ports.driven.cliente_perfis import ClientePerfis
 from app.application.ports.driven.cliente_ia_analise import ClienteIAAnalise
 from app.application.ports.driven.cliente_gerador import ClienteGerador
-from app.domain.entidades.status_servico import EstadoServico
 
 VERSAO = "1.0.0"
 
