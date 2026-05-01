@@ -12,7 +12,7 @@ class AdaptadorClienteIA(ClienteIAAnalise):
     def verificar_saude(self) -> StatusServico:
         try:
             resposta = requests.get(
-                f"{IA_ANALISE_URL}/health/ready",
+                f"{IA_ANALISE_URL}/saude/ia", # refactor: veio do desenvolvimento do Fê.
                 timeout=HTTP_TIMEOUT
             )
             if resposta.status_code == 200:
