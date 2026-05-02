@@ -6,6 +6,7 @@ from flask import Flask
 from app.adapters.driven.clients.adaptador_cliente_perfis import AdaptadorClientePerfis
 from app.adapters.driven.clients.adaptador_cliente_ia import AdaptadorClienteIA
 from app.adapters.driven.clients.adaptador_cliente_gerador import AdaptadorClienteGerador
+from app.adapters.driving.http.middleware_modo_degradado import registrar_modo_degradado
 from app.application.services.saude_service_impl import SaudeServiceImpl
 from app.adapters.driving.http.saude_routes import criar_saude_routes
 
@@ -24,4 +25,6 @@ def create_app() -> Flask:
     # Rotas
     app.register_blueprint(criar_saude_routes(saude_service))
 
+     # Middleware: modo read-only quando algum dependente está degradado
+    registrar_modo_degradado(app, saude_service)
     return app
