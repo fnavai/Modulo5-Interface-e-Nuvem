@@ -4,9 +4,10 @@ import pytest
 
 
 @pytest.fixture
-def cliente(monkeypatch):
+def cliente(monkeypatch, tmp_path):
     monkeypatch.setenv("VALIDADOR_GITHUB", "fake")
     monkeypatch.setenv("CACHE_SAUDE_TTL_SEGUNDOS", "0")  # desliga cache de saude
+    monkeypatch.setenv("ADRS_SQLITE_PATH", str(tmp_path / "adrs.db"))  # isola SQLite
 
     import importlib
     from app.config import composition_root, settings
