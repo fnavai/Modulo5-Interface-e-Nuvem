@@ -15,3 +15,7 @@ GERADOR_URL = os.getenv("GERADOR_URL", "http://localhost:5003")
 
 # Timeout padrão para chamadas HTTP entre servicos (segundos)
 HTTP_TIMEOUT = int(os.getenv("HTTP_TIMEOUT", "5"))
+
+# Cache de saude: por quanto tempo (em segundos) servimos o ultimo estado conhecido
+# de um servico que ficou indisponivel. Se 0, fallback fica desligado.
+CACHE_SAUDE_TTL_SEGUNDOS = int(os.getenv("CACHE_SAUDE_TTL_SEGUNDOS", "300"))
