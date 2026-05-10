@@ -26,3 +26,6 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")  # opcional — sem token bate em r
 GITHUB_TIMEOUT_SEGUNDOS = float(os.getenv("GITHUB_TIMEOUT_SEGUNDOS", "5.0"))
 # "http" = usa Contents API real; "fake" = adapter local (dev offline e testes).
 VALIDADOR_GITHUB = os.getenv("VALIDADOR_GITHUB", "http")
+
+# Persistencia das ADRs e vinculos com componentes (US IN-07).
+ADRS_SQLITE_PATH = os.getenv("ADRS_SQLITE_PATH", "interface_adrs.db")
