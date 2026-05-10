@@ -6,6 +6,10 @@ from flask import Flask
 from app.adapters.driven.clients.adaptador_cliente_perfis import AdaptadorClientePerfis
 from app.adapters.driven.clients.adaptador_cliente_ia import AdaptadorClienteIA
 from app.adapters.driven.clients.adaptador_cliente_gerador import AdaptadorClienteGerador
+from app.adapters.driven.clients.notificador_comentario_pr_github import (
+    NotificadorComentarioPRFake,
+    NotificadorComentarioPRGitHubHTTP,
+)
 from app.adapters.driven.clients.publicador_pr_github import (
     PublicadorPRFake,
     PublicadorPRGitHubHTTP,
@@ -21,13 +25,18 @@ from app.adapters.driven.persistence.repositorio_adrs_sqlite import RepositorioA
 from app.adapters.driven.persistence.repositorio_rascunhos_sqlite import (
     RepositorioRascunhosSQLite,
 )
+from app.adapters.driven.persistence.repositorio_regras_sqlite import (
+    RepositorioRegrasSQLite,
+)
 from app.application.services.adr_service_impl import ADRServiceImpl
 from app.application.services.edicao_service_impl import RascunhoServiceImpl
 from app.application.services.navegacao_service_impl import NavegacaoServiceImpl
+from app.application.services.regra_service_impl import RegraServiceImpl
 from app.application.services.saude_service_impl import SaudeServiceImpl
 from app.adapters.driving.http.adr_routes import criar_adr_routes
 from app.adapters.driving.http.edicao_routes import criar_edicao_routes
 from app.adapters.driving.http.navegacao_routes import criar_navegacao_routes
+from app.adapters.driving.http.regra_routes import criar_regra_routes
 from app.adapters.driving.http.saude_routes import criar_saude_routes
 from app.config.settings import (
     ADRS_SQLITE_PATH,
@@ -35,8 +44,10 @@ from app.config.settings import (
     GITHUB_BASE_URL,
     GITHUB_TIMEOUT_SEGUNDOS,
     GITHUB_TOKEN,
+    NOTIFICADOR_COMENTARIO_PR,
     PUBLICADOR_PR,
     RASCUNHOS_SQLITE_PATH,
+    REGRAS_SQLITE_PATH,
     VALIDADOR_GITHUB,
 )
 
@@ -67,6 +78,19 @@ def _criar_publicador_pr():
     raise ValueError(f"PUBLICADOR_PR desconhecido: {tipo}")
 
 
+def _criar_notificador_comentario_pr():
+    tipo = (NOTIFICADOR_COMENTARIO_PR or "http").lower()
+    if tipo == "fake":
+        return NotificadorComentarioPRFake()
+    if tipo == "http":
+        return NotificadorComentarioPRGitHubHTTP(
+            base_url=GITHUB_BASE_URL,
+            token=GITHUB_TOKEN or None,
+            timeout_segundos=GITHUB_TIMEOUT_SEGUNDOS,
+        )
+    raise ValueError(f"NOTIFICADOR_COMENTARIO_PR desconhecido: {tipo}")
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
 
@@ -76,8 +100,10 @@ def create_app() -> Flask:
     cliente_gerador = AdaptadorClienteGerador()
     validador_github = _criar_validador_github()
     publicador_pr = _criar_publicador_pr()
+    notificador_comentario = _criar_notificador_comentario_pr()
     repositorio_adrs = RepositorioADRsSQLite(ADRS_SQLITE_PATH)
     repositorio_rascunhos = RepositorioRascunhosSQLite(RASCUNHOS_SQLITE_PATH)
+    repositorio_regras = RepositorioRegrasSQLite(REGRAS_SQLITE_PATH)
 
     cache_saude = CacheSaudeMemoria(CACHE_SAUDE_TTL_SEGUNDOS) if CACHE_SAUDE_TTL_SEGUNDOS > 0 else None
 
@@ -88,20 +114,27 @@ def create_app() -> Flask:
     rascunho_service = RascunhoServiceImpl(
         repositorio=repositorio_rascunhos, publicador=publicador_pr,
     )
+    regra_service = RegraServiceImpl(
+        repositorio=repositorio_regras, notificador=notificador_comentario,
+    )
 
     # Rotas
     app.register_blueprint(criar_saude_routes(saude_service))
     app.register_blueprint(criar_navegacao_routes(navegacao_service))
     app.register_blueprint(criar_adr_routes(adr_service))
     app.register_blueprint(criar_edicao_routes(rascunho_service))
+    app.register_blueprint(criar_regra_routes(regra_service))
 
     # Disponibiliza para testes (substituicao de adapters).
     app.config["validador_github"] = validador_github
     app.config["publicador_pr"] = publicador_pr
+    app.config["notificador_comentario"] = notificador_comentario
     app.config["navegacao_service"] = navegacao_service
     app.config["adr_service"] = adr_service
     app.config["rascunho_service"] = rascunho_service
+    app.config["regra_service"] = regra_service
     app.config["repositorio_adrs"] = repositorio_adrs
     app.config["repositorio_rascunhos"] = repositorio_rascunhos
+    app.config["repositorio_regras"] = repositorio_regras
 
     return app
