@@ -68,3 +68,18 @@ class RegraNaoEncontradaError(LookupError):
 class ComentarioPRError(RuntimeError):
     """Falha ao postar comentario no PR via Issues API."""
     pass
+
+
+class AnotacaoInvalidaError(ValueError):
+    """Anotacao com campos faltando ou invalidos."""
+    pass
+
+
+class AnotacaoNaoEncontradaError(LookupError):
+    """Anotacao com esse id nao existe."""
+    pass
+
+
+class PermissaoAnotacaoNegadaError(RuntimeError):
+    """Apenas o autor pode editar/remover sua anotacao."""
+    pass

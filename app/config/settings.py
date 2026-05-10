@@ -38,3 +38,6 @@ PUBLICADOR_PR = os.getenv("PUBLICADOR_PR", "http")
 # Regras arquiteturais e alertas em PR (US IN-09).
 REGRAS_SQLITE_PATH = os.getenv("REGRAS_SQLITE_PATH", "interface_regras.db")
 NOTIFICADOR_COMENTARIO_PR = os.getenv("NOTIFICADOR_COMENTARIO_PR", "http")
+
+# Anotacoes colaborativas em diagramas (US IN-03).
+ANOTACOES_SQLITE_PATH = os.getenv("ANOTACOES_SQLITE_PATH", "interface_anotacoes.db")
