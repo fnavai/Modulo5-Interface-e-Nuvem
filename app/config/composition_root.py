@@ -25,21 +25,27 @@ from app.adapters.driven.persistence.repositorio_adrs_sqlite import RepositorioA
 from app.adapters.driven.persistence.repositorio_rascunhos_sqlite import (
     RepositorioRascunhosSQLite,
 )
+from app.adapters.driven.persistence.repositorio_anotacoes_sqlite import (
+    RepositorioAnotacoesSQLite,
+)
 from app.adapters.driven.persistence.repositorio_regras_sqlite import (
     RepositorioRegrasSQLite,
 )
 from app.application.services.adr_service_impl import ADRServiceImpl
+from app.application.services.anotacao_service_impl import AnotacaoServiceImpl
 from app.application.services.edicao_service_impl import RascunhoServiceImpl
 from app.application.services.navegacao_service_impl import NavegacaoServiceImpl
 from app.application.services.regra_service_impl import RegraServiceImpl
 from app.application.services.saude_service_impl import SaudeServiceImpl
 from app.adapters.driving.http.adr_routes import criar_adr_routes
+from app.adapters.driving.http.anotacao_routes import criar_anotacao_routes
 from app.adapters.driving.http.edicao_routes import criar_edicao_routes
 from app.adapters.driving.http.navegacao_routes import criar_navegacao_routes
 from app.adapters.driving.http.regra_routes import criar_regra_routes
 from app.adapters.driving.http.saude_routes import criar_saude_routes
 from app.config.settings import (
     ADRS_SQLITE_PATH,
+    ANOTACOES_SQLITE_PATH,
     CACHE_SAUDE_TTL_SEGUNDOS,
     GITHUB_BASE_URL,
     GITHUB_TIMEOUT_SEGUNDOS,
@@ -104,6 +110,7 @@ def create_app() -> Flask:
     repositorio_adrs = RepositorioADRsSQLite(ADRS_SQLITE_PATH)
     repositorio_rascunhos = RepositorioRascunhosSQLite(RASCUNHOS_SQLITE_PATH)
     repositorio_regras = RepositorioRegrasSQLite(REGRAS_SQLITE_PATH)
+    repositorio_anotacoes = RepositorioAnotacoesSQLite(ANOTACOES_SQLITE_PATH)
 
     cache_saude = CacheSaudeMemoria(CACHE_SAUDE_TTL_SEGUNDOS) if CACHE_SAUDE_TTL_SEGUNDOS > 0 else None
 
@@ -117,6 +124,7 @@ def create_app() -> Flask:
     regra_service = RegraServiceImpl(
         repositorio=repositorio_regras, notificador=notificador_comentario,
     )
+    anotacao_service = AnotacaoServiceImpl(repositorio=repositorio_anotacoes)
 
     # Rotas
     app.register_blueprint(criar_saude_routes(saude_service))
@@ -124,6 +132,7 @@ def create_app() -> Flask:
     app.register_blueprint(criar_adr_routes(adr_service))
     app.register_blueprint(criar_edicao_routes(rascunho_service))
     app.register_blueprint(criar_regra_routes(regra_service))
+    app.register_blueprint(criar_anotacao_routes(anotacao_service))
 
     # Disponibiliza para testes (substituicao de adapters).
     app.config["validador_github"] = validador_github
@@ -133,8 +142,10 @@ def create_app() -> Flask:
     app.config["adr_service"] = adr_service
     app.config["rascunho_service"] = rascunho_service
     app.config["regra_service"] = regra_service
+    app.config["anotacao_service"] = anotacao_service
     app.config["repositorio_adrs"] = repositorio_adrs
     app.config["repositorio_rascunhos"] = repositorio_rascunhos
     app.config["repositorio_regras"] = repositorio_regras
+    app.config["repositorio_anotacoes"] = repositorio_anotacoes
 
     return app
