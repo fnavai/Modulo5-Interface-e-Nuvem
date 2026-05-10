@@ -29,3 +29,8 @@ VALIDADOR_GITHUB = os.getenv("VALIDADOR_GITHUB", "http")
 
 # Persistencia das ADRs e vinculos com componentes (US IN-07).
 ADRS_SQLITE_PATH = os.getenv("ADRS_SQLITE_PATH", "interface_adrs.db")
+
+# Rascunhos do editor visual de diagramas (US IN-02).
+RASCUNHOS_SQLITE_PATH = os.getenv("RASCUNHOS_SQLITE_PATH", "interface_rascunhos.db")
+# "http" = chama GitHub API real; "fake" = adapter local pra dev/testes.
+PUBLICADOR_PR = os.getenv("PUBLICADOR_PR", "http")

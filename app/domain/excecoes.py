@@ -38,3 +38,18 @@ class TransicaoStatusInvalidaError(RuntimeError):
 class VinculoDuplicadoError(ValueError):
     """Mesmo (adr, repositorio, modulo) ja vinculado."""
     pass
+
+
+class RascunhoInvalidoError(ValueError):
+    """Rascunho com dados faltando ou invalidos."""
+    pass
+
+
+class RascunhoNaoEncontradoError(LookupError):
+    """Rascunho com esse id nao existe."""
+    pass
+
+
+class PublicacaoPRError(RuntimeError):
+    """Falha ao criar branch, commitar ou abrir PR no GitHub."""
+    pass
