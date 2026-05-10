@@ -53,3 +53,18 @@ class RascunhoNaoEncontradoError(LookupError):
 class PublicacaoPRError(RuntimeError):
     """Falha ao criar branch, commitar ou abrir PR no GitHub."""
     pass
+
+
+class RegraInvalidaError(ValueError):
+    """Regra arquitetural com dados invalidos (tipo desconhecido, parametros faltando)."""
+    pass
+
+
+class RegraNaoEncontradaError(LookupError):
+    """Regra com esse id nao existe."""
+    pass
+
+
+class ComentarioPRError(RuntimeError):
+    """Falha ao postar comentario no PR via Issues API."""
+    pass
