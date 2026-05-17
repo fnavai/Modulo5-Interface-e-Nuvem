@@ -7,6 +7,9 @@ from app.adapters.driven.clients.adaptador_cliente_perfis import AdaptadorClient
 from app.adapters.driven.clients.adaptador_cliente_ia import AdaptadorClienteIA
 from app.adapters.driven.clients.adaptador_cliente_gerador import AdaptadorClienteGerador
 from app.adapters.driven.clients.adaptador_github import AdaptadorGitHub
+from app.adapters.driven.clients.adaptador_github_explorador import (
+    AdaptadorGitHubExplorador,
+)
 from app.adapters.driven.clients.notificador_comentario_pr_github import (
     NotificadorComentarioPRFake,
     NotificadorComentarioPRGitHubHTTP,
@@ -39,6 +42,7 @@ from app.application.services.navegacao_service_impl import NavegacaoServiceImpl
 from app.application.services.regra_service_impl import RegraServiceImpl
 from app.application.services.saude_service_impl import SaudeServiceImpl
 from app.application.services.projeto_service_impl import ProjetoServiceImpl
+from app.application.services.repo_service_impl import RepoServiceImpl
 from app.adapters.driving.http.adr_routes import criar_adr_routes
 from app.adapters.driving.http.anotacao_routes import criar_anotacao_routes
 from app.adapters.driving.http.edicao_routes import criar_edicao_routes
@@ -46,6 +50,7 @@ from app.adapters.driving.http.navegacao_routes import criar_navegacao_routes
 from app.adapters.driving.http.regra_routes import criar_regra_routes
 from app.adapters.driving.http.saude_routes import criar_saude_routes
 from app.adapters.driving.http.projeto_routes import criar_projeto_routes
+from app.adapters.driving.http.repo_routes import criar_repo_routes
 from app.adapters.driving.http.frontend_routes import criar_frontend_routes
 from app.config.settings import (
     ADRS_SQLITE_PATH,
@@ -109,6 +114,7 @@ def create_app() -> Flask:
     cliente_ia = AdaptadorClienteIA()
     cliente_gerador = AdaptadorClienteGerador()
     fonte_codigo = AdaptadorGitHub()
+    explorador_repo = AdaptadorGitHubExplorador()
     validador_github = _criar_validador_github()
     publicador_pr = _criar_publicador_pr()
     notificador_comentario = _criar_notificador_comentario_pr()
@@ -134,6 +140,7 @@ def create_app() -> Flask:
         cliente_gerador, cliente_perfis,
         cliente_ia=cliente_ia, fonte_codigo=fonte_codigo,
     )
+    repo_service = RepoServiceImpl(explorador_repo)
 
     # Rotas
     app.register_blueprint(criar_saude_routes(saude_service))
@@ -143,6 +150,7 @@ def create_app() -> Flask:
     app.register_blueprint(criar_regra_routes(regra_service))
     app.register_blueprint(criar_anotacao_routes(anotacao_service))
     app.register_blueprint(criar_projeto_routes(projeto_service))
+    app.register_blueprint(criar_repo_routes(repo_service))
     # Frontend estatico por ultimo (so pega "/" e "/assets/...", sem
     # sombrear /api/* nem /health).
     app.register_blueprint(criar_frontend_routes())
@@ -157,6 +165,7 @@ def create_app() -> Flask:
     app.config["regra_service"] = regra_service
     app.config["anotacao_service"] = anotacao_service
     app.config["projeto_service"] = projeto_service
+    app.config["repo_service"] = repo_service
     app.config["repositorio_adrs"] = repositorio_adrs
     app.config["repositorio_rascunhos"] = repositorio_rascunhos
     app.config["repositorio_regras"] = repositorio_regras
