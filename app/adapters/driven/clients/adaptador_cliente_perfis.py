@@ -39,3 +39,21 @@ class AdaptadorClientePerfis(ClientePerfis):
                 estado=EstadoServico.INDISPONIVEL,
                 detalhes="Servico inacessivel."
             )
+
+    def obter_ownership(self, owner: str, repo: str, modulo: str):
+        # Best-effort: qualquer falha (503 "nao encontrado", timeout, conexao,
+        # status inesperado) vira None — nao derruba o fluxo unificado.
+        try:
+            resposta = requests.get(
+                f"{PERFIS_URL}/api/ownership",
+                params={"repositorio": f"{owner}/{repo}", "modulo": modulo},
+                timeout=HTTP_TIMEOUT,
+            )
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            return None
+        if resposta.status_code != 200:
+            return None
+        try:
+            return resposta.json()
+        except ValueError:
+            return None

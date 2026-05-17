@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Módulo 5 · Portal</title>
+  <meta name="description" content="Portal unificado do Módulo 5 — saúde dos serviços e análise de projeto (diagrama + estrutura + ownership)." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand__mark">M5</div>
+      <div class="brand__txt">
+        <h1>Módulo 5 <span>· Portal</span></h1>
+        <p>Visão unificada — Interface · Perfis · IA · Gerador</p>
+      </div>
+    </div>
+    <div id="global-pill" class="pill pill--loading" title="Estado agregado">
+      <span class="dot"></span><span id="global-pill-txt">verificando…</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" aria-labelledby="saude-h">
+      <div class="card__head">
+        <h2 id="saude-h">Saúde dos serviços</h2>
+        <span id="saude-updated" class="muted small">—</span>
+      </div>
+      <div id="health-grid" class="health-grid">
+        <div class="skeleton"></div><div class="skeleton"></div>
+        <div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="analisar-h">
+      <div class="card__head">
+        <h2 id="analisar-h">Analisar projeto</h2>
+        <span class="muted small">repo · branch · arquivo → diagrama + estrutura + ownership</span>
+      </div>
+
+      <form id="form" class="form" autocomplete="off">
+        <div class="field">
+          <label for="repositorio">Repositório <span class="req">*</span></label>
+          <input id="repositorio" name="repositorio" placeholder="owner/repo"
+                 value="fnavai/Modulo5-Interface-e-Nuvem" required />
+        </div>
+        <div class="field field--sm">
+          <label for="branch">Branch</label>
+          <input id="branch" name="branch" placeholder="develop" value="develop" />
+        </div>
+        <div class="field">
+          <label for="caminho">Arquivo <span class="req">*</span></label>
+          <input id="caminho" name="caminho" placeholder="app/main.py"
+                 value="app/main.py" required />
+        </div>
+        <button id="submit" type="submit" class="btn">
+          <span class="btn__txt">Analisar</span>
+          <span class="btn__spin" hidden></span>
+        </button>
+      </form>
+
+      <div id="banner" class="banner" hidden></div>
+
+      <div id="result" class="result" hidden>
+        <div id="notices" class="notices"></div>
+        <div class="panels">
+          <article class="panel panel--diagram">
+            <div class="panel__head">
+              <h3>Diagrama de classes</h3>
+              <button id="toggle-src" class="link" type="button">ver fonte</button>
+            </div>
+            <div id="diagram" class="diagram"></div>
+            <pre id="diagram-src" class="code" hidden></pre>
+          </article>
+
+          <aside class="side">
+            <article class="panel">
+              <div class="panel__head"><h3>Resumo da IA</h3></div>
+              <div id="resumo" class="kv"></div>
+            </article>
+            <article class="panel">
+              <div class="panel__head"><h3>Ownership</h3></div>
+              <div id="ownership" class="kv"></div>
+            </article>
+          </aside>
+        </div>
+      </div>
+
+      <div id="empty" class="empty">
+        <div class="empty__icon">◇</div>
+        <p>Informe um repositório, branch e arquivo e clique <strong>Analisar</strong>.</p>
+        <p class="muted small">O Gerador busca o código no GitHub, a IA extrai a estrutura e o Perfis anexa o ownership.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Módulo 5 — portal unificado</span>
+    <span class="muted">Gerador → GitHub → IA · Perfis (best-effort, degradação graciosa)</span>
+  </footer>
+
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>

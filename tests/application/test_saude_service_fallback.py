@@ -28,6 +28,14 @@ class _Cliente(ClientePerfis, ClienteIAAnalise, ClienteGerador):
             raise AssertionError(f"Cliente {self._nome} chamado mais vezes que o esperado.")
         return self._respostas.pop(0)
 
+    # Metodos do contrato estendido dos ports — nao exercitados por estes
+    # testes de saude/fallback; presentes apenas para o double ser concreto.
+    def gerar_diagrama_branch(self, owner, repo, branch, caminho) -> dict:
+        return {}
+
+    def obter_ownership(self, owner, repo, modulo):
+        return None
+
 
 def test_primeira_chamada_sucesso_popula_cache_e_status_ok():
     perfis = _Cliente("perfis_usuarios", [_ok("perfis_usuarios")])

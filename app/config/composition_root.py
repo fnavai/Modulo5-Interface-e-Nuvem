@@ -37,12 +37,15 @@ from app.application.services.edicao_service_impl import RascunhoServiceImpl
 from app.application.services.navegacao_service_impl import NavegacaoServiceImpl
 from app.application.services.regra_service_impl import RegraServiceImpl
 from app.application.services.saude_service_impl import SaudeServiceImpl
+from app.application.services.projeto_service_impl import ProjetoServiceImpl
 from app.adapters.driving.http.adr_routes import criar_adr_routes
 from app.adapters.driving.http.anotacao_routes import criar_anotacao_routes
 from app.adapters.driving.http.edicao_routes import criar_edicao_routes
 from app.adapters.driving.http.navegacao_routes import criar_navegacao_routes
 from app.adapters.driving.http.regra_routes import criar_regra_routes
 from app.adapters.driving.http.saude_routes import criar_saude_routes
+from app.adapters.driving.http.projeto_routes import criar_projeto_routes
+from app.adapters.driving.http.frontend_routes import criar_frontend_routes
 from app.config.settings import (
     ADRS_SQLITE_PATH,
     ANOTACOES_SQLITE_PATH,
@@ -125,6 +128,7 @@ def create_app() -> Flask:
         repositorio=repositorio_regras, notificador=notificador_comentario,
     )
     anotacao_service = AnotacaoServiceImpl(repositorio=repositorio_anotacoes)
+    projeto_service = ProjetoServiceImpl(cliente_gerador, cliente_perfis)
 
     # Rotas
     app.register_blueprint(criar_saude_routes(saude_service))
@@ -133,6 +137,10 @@ def create_app() -> Flask:
     app.register_blueprint(criar_edicao_routes(rascunho_service))
     app.register_blueprint(criar_regra_routes(regra_service))
     app.register_blueprint(criar_anotacao_routes(anotacao_service))
+    app.register_blueprint(criar_projeto_routes(projeto_service))
+    # Frontend estatico por ultimo (so pega "/" e "/assets/...", sem
+    # sombrear /api/* nem /health).
+    app.register_blueprint(criar_frontend_routes())
 
     # Disponibiliza para testes (substituicao de adapters).
     app.config["validador_github"] = validador_github
@@ -143,6 +151,7 @@ def create_app() -> Flask:
     app.config["rascunho_service"] = rascunho_service
     app.config["regra_service"] = regra_service
     app.config["anotacao_service"] = anotacao_service
+    app.config["projeto_service"] = projeto_service
     app.config["repositorio_adrs"] = repositorio_adrs
     app.config["repositorio_rascunhos"] = repositorio_rascunhos
     app.config["repositorio_regras"] = repositorio_regras

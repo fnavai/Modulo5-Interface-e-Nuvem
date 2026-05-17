@@ -14,3 +14,9 @@ class ClienteIAAnalise(ABC):
         Nunca levanta excecao — retorna StatusServico com estado adequado.
         """
         pass
+
+    # Obs: a IA nao expoe endpoint por owner/repo/branch/file (so
+    # POST /estrutura/diagrama com {"codigo": ...}). O resumo estrutural
+    # do fluxo unificado vem do campo "estrutura" que o Gerador ja devolve
+    # em POST /diagrama/branch (formato=mermaid). Por isso este port
+    # permanece apenas com verificar_saude.

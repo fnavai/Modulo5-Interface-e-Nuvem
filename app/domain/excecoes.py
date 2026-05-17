@@ -83,3 +83,9 @@ class AnotacaoNaoEncontradaError(LookupError):
 class PermissaoAnotacaoNegadaError(RuntimeError):
     """Apenas o autor pode editar/remover sua anotacao."""
     pass
+
+
+class ProjetoInvalidoError(ValueError):
+    """Inputs invalidos para o fluxo unificado de analise de projeto
+    (repositorio/branch/caminho faltando ou malformado)."""
+    pass
