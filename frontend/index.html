@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Módulo 5 · Portal</title>
-  <meta name="description" content="Portal unificado do Módulo 5 — saúde dos serviços e análise de projeto (diagrama + estrutura + ownership)." />
+  <meta name="description" content="Portal unificado do Módulo 5 — engenharia reversa: diagrama + estrutura + qualidade + ownership, com relatório/apresentação baixáveis." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -19,7 +19,7 @@
       <div class="brand__mark">M5</div>
       <div class="brand__txt">
         <h1>Módulo 5 <span>· Portal</span></h1>
-        <p>Visão unificada — Interface · Perfis · IA · Gerador</p>
+        <p>Documentação inteligente — Interface · Perfis · IA · Gerador</p>
       </div>
     </div>
     <div id="global-pill" class="pill pill--loading" title="Estado agregado">
@@ -28,21 +28,23 @@
   </header>
 
   <main>
-    <section class="card" aria-labelledby="saude-h">
-      <div class="card__head">
-        <h2 id="saude-h">Saúde dos serviços</h2>
+    <!-- Saúde: faixa fina e secundária (mostra a integração viva) -->
+    <section class="strip" aria-labelledby="saude-h">
+      <div class="strip__head">
+        <h2 id="saude-h">Serviços integrados</h2>
         <span id="saude-updated" class="muted small">—</span>
       </div>
-      <div id="health-grid" class="health-grid">
+      <div id="health-grid" class="health-grid health-grid--compact">
         <div class="skeleton"></div><div class="skeleton"></div>
         <div class="skeleton"></div><div class="skeleton"></div>
       </div>
     </section>
 
+    <!-- Hero: a análise é o protagonista, roda sozinha ao abrir -->
     <section class="card" aria-labelledby="analisar-h">
       <div class="card__head">
-        <h2 id="analisar-h">Analisar projeto</h2>
-        <span class="muted small">repo · branch · arquivo → diagrama + estrutura + ownership</span>
+        <h2 id="analisar-h">Análise de engenharia reversa</h2>
+        <span class="muted small">repo · branch · arquivo → diagrama + estrutura + qualidade + ownership</span>
       </div>
 
       <form id="form" class="form" autocomplete="off">
@@ -70,6 +72,27 @@
 
       <div id="result" class="result" hidden>
         <div id="notices" class="notices"></div>
+
+        <!-- Barra de documentos baixáveis (módulos Relatórios/Apresentações) -->
+        <div class="docbar">
+          <span class="docbar__lbl">Documentação do projeto:</span>
+          <button id="btn-pptx" class="btn btn--soft" type="button">
+            <span class="btn__txt">⬇ Apresentação .pptx</span>
+            <span class="btn__spin" hidden></span>
+          </button>
+          <span class="docbar__sep"></span>
+          <select id="sel-formato" class="select" title="Formato do relatório">
+            <option value="pdf">PDF</option>
+            <option value="docx">DOCX</option>
+            <option value="md">Markdown</option>
+          </select>
+          <button id="btn-relatorio" class="btn btn--soft" type="button">
+            <span class="btn__txt">⬇ Relatório</span>
+            <span class="btn__spin" hidden></span>
+          </button>
+          <span id="dl-status" class="docbar__status muted small"></span>
+        </div>
+
         <div class="panels">
           <article class="panel panel--diagram">
             <div class="panel__head">
@@ -86,6 +109,10 @@
               <div id="resumo" class="kv"></div>
             </article>
             <article class="panel">
+              <div class="panel__head"><h3>Qualidade do código</h3></div>
+              <div id="qualidade" class="kv"></div>
+            </article>
+            <article class="panel">
               <div class="panel__head"><h3>Ownership</h3></div>
               <div id="ownership" class="kv"></div>
             </article>
@@ -95,15 +122,15 @@
 
       <div id="empty" class="empty">
         <div class="empty__icon">◇</div>
-        <p>Informe um repositório, branch e arquivo e clique <strong>Analisar</strong>.</p>
-        <p class="muted small">O Gerador busca o código no GitHub, a IA extrai a estrutura e o Perfis anexa o ownership.</p>
+        <p>Carregando a análise de exemplo…</p>
+        <p class="muted small">O Gerador busca o código no GitHub, a IA extrai estrutura e qualidade, o Perfis anexa o ownership.</p>
       </div>
     </section>
   </main>
 
   <footer class="foot">
-    <span>Módulo 5 — portal unificado</span>
-    <span class="muted">Gerador → GitHub → IA · Perfis (best-effort, degradação graciosa)</span>
+    <span>Módulo 5 — plataforma de documentação inteligente</span>
+    <span class="muted">Gerador → GitHub → IA · Perfis · degradação graciosa</span>
   </footer>
 
   <script src="/assets/app.js" defer></script>

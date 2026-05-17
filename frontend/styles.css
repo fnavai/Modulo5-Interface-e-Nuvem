@@ -166,3 +166,34 @@ main{max-width:1180px;margin:30px auto;padding:0 clamp(16px,4vw,30px);
 
 .foot{max-width:1180px;margin:34px auto 0;padding:0 30px;display:flex;
   justify-content:space-between;gap:12px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+
+/* faixa de saúde compacta (secundária ao resultado) */
+.strip{max-width:1180px;margin:22px auto 0;padding:0 clamp(16px,4vw,30px)}
+.strip__head{display:flex;align-items:baseline;justify-content:space-between;
+  gap:12px;margin-bottom:10px}
+.strip__head h2{font-size:13px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.7px}
+.health-grid--compact{gap:10px}
+.health-grid--compact .svc{padding:11px 14px}
+.health-grid--compact .svc__detail,
+.health-grid--compact .svc__meta{display:none}
+.health-grid--compact .skeleton{height:46px}
+main{margin-top:14px}
+
+/* barra de documentos baixáveis */
+.docbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  margin-bottom:18px;padding:14px 16px;border-radius:var(--radius-sm);
+  border:1px solid var(--card-brd);
+  background:linear-gradient(180deg,rgba(124,92,255,.08),transparent)}
+.docbar__lbl{font-size:13px;font-weight:600;color:#cdd0ea}
+.docbar__sep{width:1px;height:24px;background:var(--card-brd)}
+.docbar__status{margin-left:auto;font-family:var(--mono);min-height:16px}
+.btn--soft{background:rgba(124,92,255,.16);color:#d7ccff;
+  box-shadow:none;border:1px solid rgba(124,92,255,.34);padding:10px 16px;
+  font-size:13px}
+.btn--soft:hover{filter:none;background:rgba(124,92,255,.26)}
+.select{background:rgba(0,0,0,.28);border:1px solid var(--card-brd);
+  color:var(--txt);padding:10px 12px;border-radius:var(--radius-sm);
+  font-size:13px;font-family:var(--mono);outline:none;cursor:pointer}
+.select:focus{border-color:var(--acc)}
+@media(max-width:560px){.docbar__status{margin-left:0;width:100%}}
