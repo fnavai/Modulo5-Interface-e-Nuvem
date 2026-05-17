@@ -5,6 +5,9 @@
 from app.application.ports.driven.cliente_gerador import ClienteGerador
 from app.application.ports.driven.cliente_ia_analise import ClienteIAAnalise
 from app.application.ports.driven.cliente_perfis import ClientePerfis
+from app.application.ports.driven.explorador_repositorio import (
+    ExploradorRepositorio,
+)
 from app.application.ports.driven.fonte_codigo import FonteCodigo
 from app.domain.entidades.status_servico import StatusServico, EstadoServico
 from app.domain.excecoes import FalhaNaComunicacaoError
@@ -88,6 +91,23 @@ class FonteCodigoFake(FonteCodigo):
         if self._falha:
             raise RuntimeError("Fonte falhou (fake).")
         return self._codigo
+
+
+class ExploradorRepositorioFake(ExploradorRepositorio):
+    def __init__(self, branches=None, arquivos=None, falha=False):
+        self._branches = branches if branches is not None else ["develop"]
+        self._arquivos = arquivos if arquivos is not None else []
+        self._falha = falha
+
+    def listar_branches(self, owner, repo):
+        if self._falha:
+            raise FalhaNaComunicacaoError("GitHub indisponivel (fake).")
+        return list(self._branches)
+
+    def listar_arquivos(self, owner, repo, branch):
+        if self._falha:
+            raise FalhaNaComunicacaoError("GitHub indisponivel (fake).")
+        return list(self._arquivos)
 
 
 class ClientePerfisFake(ClientePerfis):
