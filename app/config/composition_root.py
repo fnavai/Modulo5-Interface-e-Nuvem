@@ -6,6 +6,7 @@ from flask import Flask
 from app.adapters.driven.clients.adaptador_cliente_perfis import AdaptadorClientePerfis
 from app.adapters.driven.clients.adaptador_cliente_ia import AdaptadorClienteIA
 from app.adapters.driven.clients.adaptador_cliente_gerador import AdaptadorClienteGerador
+from app.adapters.driven.clients.adaptador_github import AdaptadorGitHub
 from app.adapters.driven.clients.notificador_comentario_pr_github import (
     NotificadorComentarioPRFake,
     NotificadorComentarioPRGitHubHTTP,
@@ -107,6 +108,7 @@ def create_app() -> Flask:
     cliente_perfis = AdaptadorClientePerfis()
     cliente_ia = AdaptadorClienteIA()
     cliente_gerador = AdaptadorClienteGerador()
+    fonte_codigo = AdaptadorGitHub()
     validador_github = _criar_validador_github()
     publicador_pr = _criar_publicador_pr()
     notificador_comentario = _criar_notificador_comentario_pr()
@@ -128,7 +130,10 @@ def create_app() -> Flask:
         repositorio=repositorio_regras, notificador=notificador_comentario,
     )
     anotacao_service = AnotacaoServiceImpl(repositorio=repositorio_anotacoes)
-    projeto_service = ProjetoServiceImpl(cliente_gerador, cliente_perfis)
+    projeto_service = ProjetoServiceImpl(
+        cliente_gerador, cliente_perfis,
+        cliente_ia=cliente_ia, fonte_codigo=fonte_codigo,
+    )
 
     # Rotas
     app.register_blueprint(criar_saude_routes(saude_service))
