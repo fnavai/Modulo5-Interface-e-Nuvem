@@ -240,6 +240,67 @@ async function baixarDocumento(btn, url, extra, padrao) {
   }
 }
 
+// ---- seletores (Carregar branches/arquivos do GitHub) ----
+function popularSelect(sel, valores, preferido) {
+  sel.innerHTML = "";
+  (valores || []).forEach((v) => {
+    const o = document.createElement("option");
+    o.value = v; o.textContent = v;
+    sel.appendChild(o);
+  });
+  if (!valores || !valores.length) return;
+  sel.value = (preferido && valores.includes(preferido)) ? preferido : valores[0];
+}
+function carregarSpin(on) {
+  const b = document.getElementById("btn-carregar");
+  b.disabled = on;
+  b.querySelector(".btn__spin").hidden = !on;
+  b.querySelector(".btn__txt").textContent = on ? "Carregando…" : "↻ Carregar";
+}
+async function carregarArquivos() {
+  const repositorio = document.getElementById("repositorio").value.trim();
+  const branch = document.getElementById("branch").value;
+  const st = document.getElementById("carregar-status");
+  const r = await fetch(`/api/repo/arquivos?repositorio=${encodeURIComponent(repositorio)}&branch=${encodeURIComponent(branch)}`);
+  const b = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    st.textContent = "⚠ " + (b.erro || `falha ao listar arquivos (HTTP ${r.status})`);
+    st.style.color = "var(--bad)";
+    return;
+  }
+  const atual = document.getElementById("caminho").value;
+  popularSelect(document.getElementById("caminho"), b.arquivos, atual);
+  st.textContent = `✓ ${b.arquivos.length} arquivo(s) de código em ${repositorio}@${branch}`;
+  st.style.color = "var(--ok)";
+}
+async function carregarRepo() {
+  const repositorio = document.getElementById("repositorio").value.trim();
+  const st = document.getElementById("carregar-status");
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repositorio)) {
+    st.textContent = "⚠ informe o repositório como owner/repo";
+    st.style.color = "var(--bad)";
+    return;
+  }
+  carregarSpin(true);
+  st.textContent = "carregando branches e arquivos…"; st.style.color = "";
+  try {
+    const r = await fetch(`/api/repo/branches?repositorio=${encodeURIComponent(repositorio)}`);
+    const b = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      st.textContent = "⚠ " + (b.erro || `falha ao listar branches (HTTP ${r.status})`);
+      st.style.color = "var(--bad)";
+      return;
+    }
+    popularSelect(document.getElementById("branch"), b.branches, "develop");
+    await carregarArquivos();
+  } catch (e) {
+    st.textContent = "⚠ erro de rede: " + (e && e.message);
+    st.style.color = "var(--bad)";
+  } finally {
+    carregarSpin(false);
+  }
+}
+
 // ---- init ----
 if (typeof window.mermaid !== "undefined") {
   window.mermaid.initialize({
@@ -261,6 +322,16 @@ document.getElementById("btn-relatorio").addEventListener("click", (e) => {
   const fmt = document.getElementById("sel-formato").value;
   baixarDocumento(e.currentTarget, "/api/projeto/documento/relatorio",
     { formato: fmt }, "relatorio." + (fmt === "md" ? "md" : fmt));
+});
+document.getElementById("btn-carregar").addEventListener("click", carregarRepo);
+document.getElementById("branch").addEventListener("change", () => {
+  carregarArquivos().catch(() => {});
+});
+document.querySelectorAll("#quick-repos .chip").forEach((c) => {
+  c.addEventListener("click", () => {
+    document.getElementById("repositorio").value = c.dataset.repo;
+    carregarRepo();
+  });
 });
 
 // saúde + auto-análise ao abrir (o resultado é o protagonista)

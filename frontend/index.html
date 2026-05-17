@@ -47,26 +47,44 @@
         <span class="muted small">repo · branch · arquivo → diagrama + estrutura + qualidade + ownership</span>
       </div>
 
+      <div class="quick" id="quick-repos">
+        <span class="quick__lbl">Repos do Módulo 5:</span>
+        <button type="button" class="chip" data-repo="fnavai/Modulo5-Interface-e-Nuvem">Interface-e-Nuvem</button>
+        <button type="button" class="chip" data-repo="TheoCasella/Modulo5-Perfis-Usuarios">Perfis-Usuarios</button>
+        <button type="button" class="chip" data-repo="EnzoSenatori/Modulo5-IA-Analise-Codigo">IA-Analise</button>
+        <button type="button" class="chip" data-repo="RafaelOCorrea06/Modulo5-Gerador-Documentacao">Gerador-Doc</button>
+      </div>
+
       <form id="form" class="form" autocomplete="off">
         <div class="field">
           <label for="repositorio">Repositório <span class="req">*</span></label>
-          <input id="repositorio" name="repositorio" placeholder="owner/repo"
-                 value="fnavai/Modulo5-Interface-e-Nuvem" required />
+          <div class="repo-row">
+            <input id="repositorio" name="repositorio" placeholder="owner/repo"
+                   value="fnavai/Modulo5-Interface-e-Nuvem" required />
+            <button id="btn-carregar" type="button" class="btn btn--soft">
+              <span class="btn__txt">↻ Carregar</span>
+              <span class="btn__spin" hidden></span>
+            </button>
+          </div>
         </div>
         <div class="field field--sm">
           <label for="branch">Branch</label>
-          <input id="branch" name="branch" placeholder="develop" value="develop" />
+          <select id="branch" name="branch">
+            <option value="develop" selected>develop</option>
+          </select>
         </div>
         <div class="field">
           <label for="caminho">Arquivo <span class="req">*</span></label>
-          <input id="caminho" name="caminho" placeholder="caminho/do/arquivo.py"
-                 value="app/application/services/projeto_service_impl.py" required />
+          <select id="caminho" name="caminho" required>
+            <option value="app/application/services/projeto_service_impl.py" selected>app/application/services/projeto_service_impl.py</option>
+          </select>
         </div>
         <button id="submit" type="submit" class="btn">
           <span class="btn__txt">Analisar</span>
           <span class="btn__spin" hidden></span>
         </button>
       </form>
+      <div id="carregar-status" class="muted small" style="margin-top:8px"></div>
 
       <div id="banner" class="banner" hidden></div>
 

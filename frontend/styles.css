@@ -197,3 +197,24 @@ main{margin-top:14px}
   font-size:13px;font-family:var(--mono);outline:none;cursor:pointer}
 .select:focus{border-color:var(--acc)}
 @media(max-width:560px){.docbar__status{margin-left:0;width:100%}}
+
+/* atalho de repos + carregar + selects */
+.quick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.quick__lbl{font-size:12.5px;color:var(--muted);font-weight:500}
+.chip{cursor:pointer;font-family:var(--mono);font-size:12px;
+  padding:7px 12px;border-radius:999px;color:#cdd0ea;
+  background:rgba(255,255,255,.05);border:1px solid var(--card-brd);
+  transition:.18s}
+.chip:hover{background:rgba(124,92,255,.2);border-color:rgba(124,92,255,.5);
+  color:#fff;transform:translateY(-1px)}
+.repo-row{display:flex;gap:10px;align-items:stretch}
+.repo-row input{flex:1}
+.repo-row .btn--soft{white-space:nowrap;padding:0 16px}
+.field select{
+  background:rgba(0,0,0,.28);border:1px solid var(--card-brd);color:var(--txt);
+  padding:12px 14px;border-radius:var(--radius-sm);font-size:13px;
+  font-family:var(--mono);outline:none;transition:.2s;cursor:pointer;
+  max-width:100%}
+.field select:focus{border-color:var(--acc);
+  box-shadow:0 0 0 3px rgba(124,92,255,.18)}
+.field--sm{flex:0 0 170px}
