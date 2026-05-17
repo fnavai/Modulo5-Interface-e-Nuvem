@@ -6,6 +6,9 @@ from app.application.ports.driven.cliente_ia_analise import ClienteIAAnalise
 from app.domain.entidades.status_servico import StatusServico, EstadoServico
 from app.config.settings import IA_ANALISE_URL, HTTP_TIMEOUT
 
+# A analise de qualidade e AST (rapida), mas damos folga p/ import frio.
+_QUALIDADE_TIMEOUT = max(HTTP_TIMEOUT, 15)
+
 
 class AdaptadorClienteIA(ClienteIAAnalise):
 
@@ -38,3 +41,26 @@ class AdaptadorClienteIA(ClienteIAAnalise):
                 estado=EstadoServico.INDISPONIVEL,
                 detalhes="Servico inacessivel."
             )
+
+    def analisar_qualidade(self, codigo: str) -> "dict | None":
+        # Best-effort: POST /qualidade/analisar {"codigo": ...} -> dict
+        # (acoplamento/ciclos/severidade). Qualquer falha -> None, para
+        # nao derrubar o fluxo unificado (a qualidade e opcional).
+        if not codigo or not codigo.strip():
+            return None
+        try:
+            resposta = requests.post(
+                f"{IA_ANALISE_URL}/qualidade/analisar",
+                json={"codigo": codigo},
+                timeout=_QUALIDADE_TIMEOUT,
+            )
+        except (requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError):
+            return None
+        if resposta.status_code != 200:
+            return None
+        try:
+            dados = resposta.json()
+        except ValueError:
+            return None
+        return dados if isinstance(dados, dict) else {"resultado": dados}
