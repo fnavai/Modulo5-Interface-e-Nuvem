@@ -30,10 +30,19 @@ class ProjetoVisualizado:
     diagrama_mermaid: Optional[str]
     resumo_ia: Optional[dict]
     ownership: Optional[dict]
+    # Diagnostico de qualidade da IA (acoplamento/ciclos/severidade).
+    # Opcional e best-effort: None quando a IA/fonte do codigo falha.
+    # NAO entra em partes_faltantes (so os 3 originais) — a tela mostra
+    # o vazio no proprio painel, como faz com resumo_ia/ownership.
+    qualidade: Optional[dict] = None
 
     @property
     def tem_diagrama(self) -> bool:
         return bool(self.diagrama_mermaid)
+
+    @property
+    def tem_qualidade(self) -> bool:
+        return self.qualidade is not None
 
     def partes_faltantes(self) -> list:
         faltantes = []
@@ -51,5 +60,6 @@ class ProjetoVisualizado:
             "diagrama_mermaid": self.diagrama_mermaid,
             "resumo_ia": self.resumo_ia,
             "ownership": self.ownership,
+            "qualidade": self.qualidade,
             "partes_faltantes": self.partes_faltantes(),
         }

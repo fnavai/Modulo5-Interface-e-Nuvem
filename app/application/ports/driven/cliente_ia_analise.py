@@ -15,8 +15,21 @@ class ClienteIAAnalise(ABC):
         """
         pass
 
+    # Metodo NAO-abstrato de proposito: manter __abstractmethods__ ==
+    # {"verificar_saude"} (contrato testado) e nao quebrar fakes/adapters
+    # existentes. So o adapter HTTP real sobrescreve; o default e o
+    # comportamento best-effort (sem qualidade).
+    def analisar_qualidade(self, codigo: str) -> "dict | None":
+        """
+        Pede a IA o diagnostico de qualidade do codigo
+        (POST /qualidade/analisar com {"codigo": ...}): acoplamento,
+        ciclos e severidade. Best-effort: retorna None se a IA falhar
+        ou o codigo nao puder ser obtido (nunca derruba o fluxo).
+        """
+        return None
+
     # Obs: a IA nao expoe endpoint por owner/repo/branch/file (so
-    # POST /estrutura/diagrama com {"codigo": ...}). O resumo estrutural
-    # do fluxo unificado vem do campo "estrutura" que o Gerador ja devolve
-    # em POST /diagrama/branch (formato=mermaid). Por isso este port
-    # permanece apenas com verificar_saude.
+    # POST /estrutura/diagrama e /qualidade/analisar com {"codigo": ...}).
+    # O resumo estrutural do fluxo unificado vem do campo "estrutura" que
+    # o Gerador ja devolve em POST /diagrama/branch (formato=mermaid); a
+    # qualidade exige o codigo cru, obtido via FonteCodigo (GitHub raw).
