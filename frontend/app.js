@@ -152,6 +152,17 @@ async function renderDiagrama(mermaidTxt) {
 }
 
 // ---- análise ----
+const TIPOS_VALIDOS = ["classe", "sequencia", "caso_de_uso", "nuvem", "perfis"];
+const TITULOS_DIAGRAMA = {
+  classe: "UML · Diagrama de Classes",
+  sequencia: "UML · Diagrama de Sequência",
+  caso_de_uso: "UML · Diagrama de Casos de Uso",
+  nuvem: "Arquitetura de Nuvem",
+  perfis: "Perfis de Usuário",
+};
+let tipoAtual = "classe";
+const analisesCache = {};
+
 function valoresForm() {
   return {
     repositorio: document.getElementById("repositorio").value.trim(),
@@ -165,33 +176,60 @@ function setLoading(on) {
   b.querySelector(".btn__txt").textContent = on ? "Analisando…" : "Analisar";
   b.querySelector(".btn__spin").hidden = !on;
 }
-async function runAnalise() {
-  const { repositorio, branch, caminho } = valoresForm();
+function atualizarTituloDiagrama(tipo) {
+  const t = document.getElementById("diagram-title");
+  if (t) t.textContent = TITULOS_DIAGRAMA[tipo] || "Diagrama";
+}
+function marcarTabAtiva(tipo) {
+  document.querySelectorAll("#tabs-diagrama .tab").forEach((b) => {
+    b.classList.toggle("tab--active", b.dataset.tipo === tipo);
+  });
+}
+async function runAnalise(tipo) {
+  if (!TIPOS_VALIDOS.includes(tipo)) tipo = "classe";
+  tipoAtual = tipo;
+  marcarTabAtiva(tipo);
+  atualizarTituloDiagrama(tipo);
+
   const banner = document.getElementById("banner");
   const result = document.getElementById("result");
   const empty = document.getElementById("empty");
   banner.hidden = true;
   setLoading(true);
+
+  if (analisesCache[tipo]) {
+    aplicarAnalise(analisesCache[tipo], tipo);
+    empty.hidden = true;
+    result.hidden = false;
+    setLoading(false);
+    return;
+  }
+
   try {
-    const r = await fetch("/api/projeto/analisar", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ repositorio, branch, caminho }),
-    });
-    const body = await r.json().catch(() => ({}));
+    let r, body;
+    if (tipo === "perfis") {
+      r = await fetch("/api/projeto/perfis");
+      body = await r.json().catch(() => ({}));
+    } else {
+      const { repositorio, branch, caminho } = valoresForm();
+      r = await fetch("/api/projeto/analisar", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repositorio, branch, caminho, tipo }),
+      });
+      body = await r.json().catch(() => ({}));
+    }
     if (!r.ok) {
       empty.hidden = true;
+      const ctx = tipo === "perfis" ? "Perfis-Usuários" : "Gerador (GitHub/IA)";
       banner.textContent = "⚠ " + (body.erro || `Falha (HTTP ${r.status}).`) +
-        (r.status === 502 ? " O Gerador (GitHub/IA) não respondeu." : "");
+        (r.status === 502 ? ` O ${ctx} não respondeu.` : "");
       banner.hidden = false;
       return;
     }
+    analisesCache[tipo] = body;
     empty.hidden = true;
     result.hidden = false;
-    renderNotices(body.partes_faltantes);
-    await renderDiagrama(body.diagrama_mermaid);
-    renderResumo(body.resumo_ia);
-    renderQualidade(body.qualidade);
-    renderOwnership(body.ownership);
+    aplicarAnalise(body, tipo);
   } catch (e) {
     document.getElementById("empty").hidden = true;
     banner.textContent = "⚠ Erro de rede ao falar com o portal: " + (e && e.message);
@@ -199,6 +237,43 @@ async function runAnalise() {
   } finally {
     setLoading(false);
   }
+}
+function aplicarAnalise(body, tipo) {
+  if (tipo === "perfis") {
+    renderNotices([]);
+    renderDiagrama(body.mermaid);
+    renderResumoPerfis(body);
+    renderQualidade(null);
+    renderOwnership(null);
+  } else {
+    renderNotices(body.partes_faltantes);
+    renderDiagrama(body.diagrama_mermaid);
+    renderResumo(body.resumo_ia);
+    renderQualidade(body.qualidade);
+    renderOwnership(body.ownership);
+  }
+}
+function renderResumoPerfis(body) {
+  const box = document.getElementById("resumo");
+  if (!body || typeof body !== "object") {
+    box.innerHTML = '<div class="kv__empty">Diagrama de perfis indisponível.</div>';
+    return;
+  }
+  let html = "";
+  if (Array.isArray(body.papeis)) {
+    html += linhaKV("Papéis", body.papeis.length);
+    const tags = body.papeis.slice(0, 12)
+      .map((p) => `<span class="tag">${esc(p)}</span>`).join("");
+    html += `<div class="kv__row" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <span class="kv__k">Papéis disponíveis</span><div>${tags}</div></div>`;
+  }
+  if (Array.isArray(body.templates_resumo)) {
+    html += linhaKV("Templates ativos", body.templates_resumo.length);
+  }
+  if (Array.isArray(body.personas_legadas)) {
+    html += linhaKV("Personas legadas", body.personas_legadas.length);
+  }
+  box.innerHTML = html || '<div class="kv__empty">Sem dados.</div>';
 }
 
 // ---- downloads (Relatórios / Apresentações) ----
@@ -310,7 +385,9 @@ if (typeof window.mermaid !== "undefined") {
 }
 document.getElementById("form").addEventListener("submit", (ev) => {
   ev.preventDefault();
-  runAnalise();
+  // ao analisar manualmente, invalida o cache do tipo atual e refaz.
+  delete analisesCache[tipoAtual];
+  runAnalise(tipoAtual);
 });
 document.getElementById("toggle-src").addEventListener("click", () => {
   const s = document.getElementById("diagram-src");
@@ -323,18 +400,25 @@ document.getElementById("btn-relatorio").addEventListener("click", (e) => {
   baixarDocumento(e.currentTarget, "/api/projeto/documento/relatorio",
     { formato: fmt }, "relatorio." + (fmt === "md" ? "md" : fmt));
 });
-document.getElementById("btn-carregar").addEventListener("click", carregarRepo);
+document.getElementById("btn-carregar").addEventListener("click", () => {
+  // mudar de repo invalida todos os caches (exceto perfis, que é global).
+  const cachePerfis = analisesCache["perfis"];
+  for (const k of Object.keys(analisesCache)) delete analisesCache[k];
+  if (cachePerfis) analisesCache["perfis"] = cachePerfis;
+  carregarRepo();
+});
 document.getElementById("branch").addEventListener("change", () => {
   carregarArquivos().catch(() => {});
 });
-document.querySelectorAll("#quick-repos .chip").forEach((c) => {
-  c.addEventListener("click", () => {
-    document.getElementById("repositorio").value = c.dataset.repo;
-    carregarRepo();
+document.querySelectorAll("#tabs-diagrama .tab").forEach((b) => {
+  b.addEventListener("click", () => {
+    const tipo = b.dataset.tipo;
+    if (tipo === tipoAtual) return;
+    runAnalise(tipo);
   });
 });
 
 // saúde + auto-análise ao abrir (o resultado é o protagonista)
 atualizarSaude();
 setInterval(atualizarSaude, 10000);
-runAnalise();
+runAnalise("classe");

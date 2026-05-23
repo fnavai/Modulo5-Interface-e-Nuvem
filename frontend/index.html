@@ -47,19 +47,19 @@
         <span class="muted small">repo · branch · arquivo → diagrama + estrutura + qualidade + ownership</span>
       </div>
 
-      <div class="quick" id="quick-repos">
-        <span class="quick__lbl">Repos do Módulo 5:</span>
-        <button type="button" class="chip" data-repo="fnavai/Modulo5-Interface-e-Nuvem">Interface-e-Nuvem</button>
-        <button type="button" class="chip" data-repo="TheoCasella/Modulo5-Perfis-Usuarios">Perfis-Usuarios</button>
-        <button type="button" class="chip" data-repo="EnzoSenatori/Modulo5-IA-Analise-Codigo">IA-Analise</button>
-        <button type="button" class="chip" data-repo="RafaelOCorrea06/Modulo5-Gerador-Documentacao">Gerador-Doc</button>
+      <div class="tabs" role="tablist" id="tabs-diagrama">
+        <button type="button" class="tab tab--active" data-tipo="classe" role="tab">UML · Classe</button>
+        <button type="button" class="tab" data-tipo="sequencia" role="tab">UML · Sequência</button>
+        <button type="button" class="tab" data-tipo="caso_de_uso" role="tab">UML · Casos de Uso</button>
+        <button type="button" class="tab" data-tipo="nuvem" role="tab">Arquitetura de Nuvem</button>
+        <button type="button" class="tab" data-tipo="perfis" role="tab">Perfis de Usuário</button>
       </div>
 
       <form id="form" class="form" autocomplete="off">
         <div class="field">
           <label for="repositorio">Repositório <span class="req">*</span></label>
           <div class="repo-row">
-            <input id="repositorio" name="repositorio" placeholder="owner/repo"
+            <input id="repositorio" name="repositorio" placeholder="owner/repo (ex.: fnavai/Modulo5-Interface-e-Nuvem)"
                    value="fnavai/Modulo5-Interface-e-Nuvem" required />
             <button id="btn-carregar" type="button" class="btn btn--soft">
               <span class="btn__txt">↻ Carregar</span>
@@ -114,7 +114,7 @@
         <div class="panels">
           <article class="panel panel--diagram">
             <div class="panel__head">
-              <h3>Diagrama de classes</h3>
+              <h3 id="diagram-title">Diagrama</h3>
               <button id="toggle-src" class="link" type="button">ver fonte</button>
             </div>
             <div id="diagram" class="diagram"></div>
