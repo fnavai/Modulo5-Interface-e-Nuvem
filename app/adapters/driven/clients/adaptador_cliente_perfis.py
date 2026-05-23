@@ -57,3 +57,19 @@ class AdaptadorClientePerfis(ClientePerfis):
             return resposta.json()
         except ValueError:
             return None
+
+    def obter_diagrama_perfis(self):
+        # Best-effort: qualquer falha vira None.
+        try:
+            resposta = requests.get(
+                f"{PERFIS_URL}/api/perfis/diagrama",
+                timeout=HTTP_TIMEOUT,
+            )
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            return None
+        if resposta.status_code != 200:
+            return None
+        try:
+            return resposta.json()
+        except ValueError:
+            return None

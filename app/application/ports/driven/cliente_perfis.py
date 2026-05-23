@@ -27,3 +27,13 @@ class ClientePerfis(ABC):
         nao encontrar (nunca derruba o fluxo unificado).
         """
         pass
+
+    # Metodo NAO-abstrato de proposito: nao quebrar fakes existentes
+    # (padrao ja usado em ClienteIA/ClienteGerador para metodos opcionais).
+    def obter_diagrama_perfis(self) -> "dict | None":
+        """
+        GET /api/perfis/diagrama no Perfis-Usuarios — devolve o diagrama
+        global (papeis + templates + personas legadas) em Mermaid.
+        Best-effort: None em qualquer falha.
+        """
+        return None

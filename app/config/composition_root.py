@@ -49,6 +49,7 @@ from app.adapters.driving.http.edicao_routes import criar_edicao_routes
 from app.adapters.driving.http.navegacao_routes import criar_navegacao_routes
 from app.adapters.driving.http.regra_routes import criar_regra_routes
 from app.adapters.driving.http.saude_routes import criar_saude_routes
+from app.adapters.driving.http.perfis_routes import criar_perfis_routes
 from app.adapters.driving.http.projeto_routes import criar_projeto_routes
 from app.adapters.driving.http.repo_routes import criar_repo_routes
 from app.adapters.driving.http.frontend_routes import criar_frontend_routes
@@ -150,6 +151,7 @@ def create_app() -> Flask:
     app.register_blueprint(criar_regra_routes(regra_service))
     app.register_blueprint(criar_anotacao_routes(anotacao_service))
     app.register_blueprint(criar_projeto_routes(projeto_service))
+    app.register_blueprint(criar_perfis_routes(projeto_service))
     app.register_blueprint(criar_repo_routes(repo_service))
     # Frontend estatico por ultimo (so pega "/" e "/assets/...", sem
     # sombrear /api/* nem /health).
