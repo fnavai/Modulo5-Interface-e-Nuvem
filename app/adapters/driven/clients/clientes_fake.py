@@ -29,15 +29,17 @@ class ClienteGeradorFake(ClienteGerador):
         # Guarda o ultimo payload recebido (assert nos testes).
         self.ultima_apresentacao = None
         self.ultimo_relatorio = None
+        self.ultimo_tipo = None
 
     def verificar_saude(self) -> StatusServico:
         return _saude("gerador_documentacao")
 
     def gerar_diagrama_branch(
-        self, owner: str, repo: str, branch: str, caminho: str
+        self, owner: str, repo: str, branch: str, caminho: str, tipo: str = "classe"
     ) -> dict:
         if self._falha:
             raise FalhaNaComunicacaoError("Gerador indisponivel (fake).")
+        self.ultimo_tipo = tipo
         return {
             "diagrama_mermaid": self._diagrama,
             "estrutura": self._estrutura,
@@ -111,9 +113,11 @@ class ExploradorRepositorioFake(ExploradorRepositorio):
 
 
 class ClientePerfisFake(ClientePerfis):
-    def __init__(self, ownership=None, falha=False):
+    def __init__(self, ownership=None, diagrama_perfis=None, falha=False, falha_diagrama=False):
         self._ownership = ownership
+        self._diagrama_perfis = diagrama_perfis
         self._falha = falha
+        self._falha_diagrama = falha_diagrama
 
     def verificar_saude(self) -> StatusServico:
         return _saude("perfis_usuarios")
@@ -122,3 +126,8 @@ class ClientePerfisFake(ClientePerfis):
         if self._falha:
             raise FalhaNaComunicacaoError("Perfis indisponivel (fake).")
         return self._ownership
+
+    def obter_diagrama_perfis(self):
+        if self._falha_diagrama:
+            return None
+        return self._diagrama_perfis

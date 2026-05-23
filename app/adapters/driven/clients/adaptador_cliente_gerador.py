@@ -45,13 +45,14 @@ class AdaptadorClienteGerador(ClienteGerador):
             )
 
     def gerar_diagrama_branch(
-        self, owner: str, repo: str, branch: str, caminho: str
+        self, owner: str, repo: str, branch: str, caminho: str, tipo: str = "classe"
     ) -> dict:
         corpo = {
             "repositorio": f"{owner}/{repo}",
             "branch": branch,
             "arquivo": caminho,
             "formato": "mermaid",
+            "tipo": tipo,
         }
         try:
             resposta = requests.post(

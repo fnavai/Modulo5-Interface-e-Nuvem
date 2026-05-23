@@ -61,6 +61,7 @@ def test_gerador_sucesso_normaliza_mermaid_e_estrutura(monkeypatch):
         "branch": "develop",
         "arquivo": "app/main.py",
         "formato": "mermaid",
+        "tipo": "classe",
     }
     assert capturado["timeout"] >= 20  # generoso p/ pipeline GitHub+IA
 

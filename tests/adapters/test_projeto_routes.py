@@ -45,6 +45,34 @@ def test_analisar_200_devolve_visao_unificada():
     assert body["referencia"]["repo"] == "Modulo5-Interface-e-Nuvem"
 
 
+def test_analisar_com_tipo_sequencia_repassa_ao_gerador():
+    gerador = ClienteGeradorFake(diagrama="sequenceDiagram\n  participant A", estrutura={"linguagem": "python"})
+    cli = _app(gerador, ClientePerfisFake())
+    r = cli.post(
+        "/api/projeto/analisar",
+        json={"repositorio": "o/r", "caminho": "a.py", "tipo": "sequencia"},
+    )
+    assert r.status_code == 200
+    assert gerador.ultimo_tipo == "sequencia"
+
+
+def test_analisar_sem_tipo_default_classe():
+    gerador = ClienteGeradorFake(diagrama="classDiagram\n  class A")
+    cli = _app(gerador, ClientePerfisFake())
+    cli.post("/api/projeto/analisar", json={"repositorio": "o/r", "caminho": "a.py"})
+    assert gerador.ultimo_tipo == "classe"
+
+
+def test_analisar_tipo_invalido_400():
+    cli = _app(ClienteGeradorFake(diagrama="x"), ClientePerfisFake())
+    r = cli.post(
+        "/api/projeto/analisar",
+        json={"repositorio": "o/r", "caminho": "a.py", "tipo": "xyz"},
+    )
+    assert r.status_code == 400
+    assert "tipo" in r.get_json()["erro"].lower()
+
+
 def test_repositorio_sem_slash_400():
     cli = _app(ClienteGeradorFake(diagrama="x"), ClientePerfisFake())
     r = cli.post(

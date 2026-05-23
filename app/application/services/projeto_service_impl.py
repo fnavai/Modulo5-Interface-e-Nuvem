@@ -33,7 +33,7 @@ class ProjetoServiceImpl(ProjetoService):
         self._fonte = fonte_codigo
 
     def analisar(
-        self, owner: str, repo: str, branch: str, caminho: str
+        self, owner: str, repo: str, branch: str, caminho: str, tipo: str = "classe"
     ) -> ProjetoVisualizado:
         referencia = ReferenciaRepo(
             owner=owner, repo=repo, branch=branch, caminho=caminho
@@ -42,7 +42,7 @@ class ProjetoServiceImpl(ProjetoService):
         # Parte obrigatoria: Gerador (pipeline Gerador->GitHub->IA).
         # Se falhar, a excecao de dominio sobe (a tela nao tem o que mostrar).
         diagrama = self._gerador.gerar_diagrama_branch(
-            owner, repo, branch, caminho
+            owner, repo, branch, caminho, tipo
         )
         diagrama_mermaid = diagrama.get("diagrama_mermaid")
         resumo_ia = diagrama.get("estrutura")
@@ -88,3 +88,6 @@ class ProjetoServiceImpl(ProjetoService):
         return self._gerador.gerar_relatorio(
             montar_relatorio(projeto, formato)
         )
+
+    def obter_diagrama_perfis(self):
+        return self._perfis.obter_diagrama_perfis()

@@ -12,7 +12,7 @@ class ProjetoService(ABC):
 
     @abstractmethod
     def analisar(
-        self, owner: str, repo: str, branch: str, caminho: str
+        self, owner: str, repo: str, branch: str, caminho: str, tipo: str = "classe"
     ) -> ProjetoVisualizado:
         """
         Executa o fluxo unificado. O diagrama (via Gerador) e obrigatorio:

@@ -17,7 +17,7 @@ class ClienteGerador(ABC):
 
     @abstractmethod
     def gerar_diagrama_branch(
-        self, owner: str, repo: str, branch: str, caminho: str
+        self, owner: str, repo: str, branch: str, caminho: str, tipo: str = "classe"
     ) -> dict:
         """
         Pede ao Gerador (POST /diagrama/branch, formato=mermaid) o diagrama

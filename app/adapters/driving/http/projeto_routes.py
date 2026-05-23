@@ -17,13 +17,15 @@ from app.domain.excecoes import (
 
 _REPO_RE = re.compile(r"^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$")
 _FORMATOS = {"md", "markdown", "docx", "pdf"}
+_TIPOS_DIAGRAMA = {"classe", "sequencia", "caso_de_uso", "nuvem"}
 
 
 def _ler_referencia(payload: dict):
-    """Retorna (owner, repo, branch, caminho) ou (None, resposta_erro)."""
+    """Retorna (owner, repo, branch, caminho, tipo) ou (None, resposta_erro)."""
     repositorio = (payload.get("repositorio") or "").strip()
     branch = (payload.get("branch") or "develop").strip() or "develop"
     caminho = (payload.get("caminho") or "").strip()
+    tipo = (payload.get("tipo") or "classe").strip() or "classe"
 
     if not _REPO_RE.match(repositorio):
         return None, (jsonify(
@@ -34,9 +36,12 @@ def _ler_referencia(payload: dict):
     if ".." in caminho:
         return None, (jsonify(
             {"erro": "caminho invalido (path traversal)."}), 400)
+    if tipo not in _TIPOS_DIAGRAMA:
+        return None, (jsonify(
+            {"erro": f"tipo invalido. Use um de: {', '.join(sorted(_TIPOS_DIAGRAMA))}."}), 400)
 
     owner, repo = repositorio.split("/", 1)
-    return (owner, repo, branch, caminho), None
+    return (owner, repo, branch, caminho, tipo), None
 
 
 def _download(resultado: dict) -> Response:
@@ -62,9 +67,9 @@ def criar_projeto_routes(servico: ProjetoService) -> Blueprint:
         ref, erro = _ler_referencia(payload)
         if erro:
             return erro
-        owner, repo, branch, caminho = ref
+        owner, repo, branch, caminho, tipo = ref
         try:
-            projeto = servico.analisar(owner, repo, branch, caminho)
+            projeto = servico.analisar(owner, repo, branch, caminho, tipo)
         except ProjetoInvalidoError as e:
             return jsonify({"erro": str(e)}), 400
         except (ServicoIndisponivelError, FalhaNaComunicacaoError) as e:
@@ -77,7 +82,7 @@ def criar_projeto_routes(servico: ProjetoService) -> Blueprint:
         ref, erro = _ler_referencia(payload)
         if erro:
             return erro
-        owner, repo, branch, caminho = ref
+        owner, repo, branch, caminho, _tipo = ref
         try:
             resultado = servico.gerar_documento_pptx(
                 owner, repo, branch, caminho)
@@ -93,7 +98,7 @@ def criar_projeto_routes(servico: ProjetoService) -> Blueprint:
         ref, erro = _ler_referencia(payload)
         if erro:
             return erro
-        owner, repo, branch, caminho = ref
+        owner, repo, branch, caminho, _tipo = ref
         formato = (payload.get("formato") or "pdf").strip().lower()
         if formato not in _FORMATOS:
             return jsonify(
