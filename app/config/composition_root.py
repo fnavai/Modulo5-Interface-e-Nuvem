@@ -1,0 +1,176 @@
+# Composition Root do Interface-e-Nuvem
+# Responsabilidade: único lugar que conhece implementações concretas.
+
+from flask import Flask
+
+from app.adapters.driven.clients.adaptador_cliente_perfis import AdaptadorClientePerfis
+from app.adapters.driven.clients.adaptador_cliente_ia import AdaptadorClienteIA
+from app.adapters.driven.clients.adaptador_cliente_gerador import AdaptadorClienteGerador
+from app.adapters.driven.clients.adaptador_github import AdaptadorGitHub
+from app.adapters.driven.clients.adaptador_github_explorador import (
+    AdaptadorGitHubExplorador,
+)
+from app.adapters.driven.clients.notificador_comentario_pr_github import (
+    NotificadorComentarioPRFake,
+    NotificadorComentarioPRGitHubHTTP,
+)
+from app.adapters.driven.clients.publicador_pr_github import (
+    PublicadorPRFake,
+    PublicadorPRGitHubHTTP,
+)
+from app.adapters.driven.clients.validador_arquivo_github_http import (
+    ValidadorArquivoGitHubHTTP,
+)
+from app.adapters.driven.clients.validador_arquivo_github_fake import (
+    ValidadorArquivoGitHubFake,
+)
+from app.adapters.driven.cache.cache_saude_memoria import CacheSaudeMemoria
+from app.adapters.driven.persistence.repositorio_adrs_sqlite import RepositorioADRsSQLite
+from app.adapters.driven.persistence.repositorio_rascunhos_sqlite import (
+    RepositorioRascunhosSQLite,
+)
+from app.adapters.driven.persistence.repositorio_anotacoes_sqlite import (
+    RepositorioAnotacoesSQLite,
+)
+from app.adapters.driven.persistence.repositorio_regras_sqlite import (
+    RepositorioRegrasSQLite,
+)
+from app.application.services.adr_service_impl import ADRServiceImpl
+from app.application.services.anotacao_service_impl import AnotacaoServiceImpl
+from app.application.services.edicao_service_impl import RascunhoServiceImpl
+from app.application.services.navegacao_service_impl import NavegacaoServiceImpl
+from app.application.services.regra_service_impl import RegraServiceImpl
+from app.application.services.saude_service_impl import SaudeServiceImpl
+from app.application.services.projeto_service_impl import ProjetoServiceImpl
+from app.application.services.repo_service_impl import RepoServiceImpl
+from app.adapters.driving.http.adr_routes import criar_adr_routes
+from app.adapters.driving.http.anotacao_routes import criar_anotacao_routes
+from app.adapters.driving.http.edicao_routes import criar_edicao_routes
+from app.adapters.driving.http.navegacao_routes import criar_navegacao_routes
+from app.adapters.driving.http.regra_routes import criar_regra_routes
+from app.adapters.driving.http.saude_routes import criar_saude_routes
+from app.adapters.driving.http.perfis_routes import criar_perfis_routes
+from app.adapters.driving.http.projeto_routes import criar_projeto_routes
+from app.adapters.driving.http.repo_routes import criar_repo_routes
+from app.adapters.driving.http.frontend_routes import criar_frontend_routes
+from app.config.settings import (
+    ADRS_SQLITE_PATH,
+    ANOTACOES_SQLITE_PATH,
+    CACHE_SAUDE_TTL_SEGUNDOS,
+    GITHUB_BASE_URL,
+    GITHUB_TIMEOUT_SEGUNDOS,
+    GITHUB_TOKEN,
+    NOTIFICADOR_COMENTARIO_PR,
+    PUBLICADOR_PR,
+    RASCUNHOS_SQLITE_PATH,
+    REGRAS_SQLITE_PATH,
+    VALIDADOR_GITHUB,
+)
+
+
+def _criar_validador_github():
+    tipo = (VALIDADOR_GITHUB or "http").lower()
+    if tipo == "fake":
+        return ValidadorArquivoGitHubFake()
+    if tipo == "http":
+        return ValidadorArquivoGitHubHTTP(
+            base_url=GITHUB_BASE_URL,
+            token=GITHUB_TOKEN or None,
+            timeout_segundos=GITHUB_TIMEOUT_SEGUNDOS,
+        )
+    raise ValueError(f"VALIDADOR_GITHUB desconhecido: {tipo}")
+
+
+def _criar_publicador_pr():
+    tipo = (PUBLICADOR_PR or "http").lower()
+    if tipo == "fake":
+        return PublicadorPRFake()
+    if tipo == "http":
+        return PublicadorPRGitHubHTTP(
+            base_url=GITHUB_BASE_URL,
+            token=GITHUB_TOKEN or None,
+            timeout_segundos=GITHUB_TIMEOUT_SEGUNDOS,
+        )
+    raise ValueError(f"PUBLICADOR_PR desconhecido: {tipo}")
+
+
+def _criar_notificador_comentario_pr():
+    tipo = (NOTIFICADOR_COMENTARIO_PR or "http").lower()
+    if tipo == "fake":
+        return NotificadorComentarioPRFake()
+    if tipo == "http":
+        return NotificadorComentarioPRGitHubHTTP(
+            base_url=GITHUB_BASE_URL,
+            token=GITHUB_TOKEN or None,
+            timeout_segundos=GITHUB_TIMEOUT_SEGUNDOS,
+        )
+    raise ValueError(f"NOTIFICADOR_COMENTARIO_PR desconhecido: {tipo}")
+
+
+def create_app() -> Flask:
+    app = Flask(__name__)
+
+    # Adaptadores driven
+    cliente_perfis = AdaptadorClientePerfis()
+    cliente_ia = AdaptadorClienteIA()
+    cliente_gerador = AdaptadorClienteGerador()
+    fonte_codigo = AdaptadorGitHub()
+    explorador_repo = AdaptadorGitHubExplorador()
+    validador_github = _criar_validador_github()
+    publicador_pr = _criar_publicador_pr()
+    notificador_comentario = _criar_notificador_comentario_pr()
+    repositorio_adrs = RepositorioADRsSQLite(ADRS_SQLITE_PATH)
+    repositorio_rascunhos = RepositorioRascunhosSQLite(RASCUNHOS_SQLITE_PATH)
+    repositorio_regras = RepositorioRegrasSQLite(REGRAS_SQLITE_PATH)
+    repositorio_anotacoes = RepositorioAnotacoesSQLite(ANOTACOES_SQLITE_PATH)
+
+    cache_saude = CacheSaudeMemoria(CACHE_SAUDE_TTL_SEGUNDOS) if CACHE_SAUDE_TTL_SEGUNDOS > 0 else None
+
+    # Services
+    saude_service = SaudeServiceImpl(cliente_perfis, cliente_ia, cliente_gerador, cache=cache_saude)
+    navegacao_service = NavegacaoServiceImpl(validador=validador_github)
+    adr_service = ADRServiceImpl(repositorio=repositorio_adrs)
+    rascunho_service = RascunhoServiceImpl(
+        repositorio=repositorio_rascunhos, publicador=publicador_pr,
+    )
+    regra_service = RegraServiceImpl(
+        repositorio=repositorio_regras, notificador=notificador_comentario,
+    )
+    anotacao_service = AnotacaoServiceImpl(repositorio=repositorio_anotacoes)
+    projeto_service = ProjetoServiceImpl(
+        cliente_gerador, cliente_perfis,
+        cliente_ia=cliente_ia, fonte_codigo=fonte_codigo,
+    )
+    repo_service = RepoServiceImpl(explorador_repo)
+
+    # Rotas
+    app.register_blueprint(criar_saude_routes(saude_service))
+    app.register_blueprint(criar_navegacao_routes(navegacao_service))
+    app.register_blueprint(criar_adr_routes(adr_service))
+    app.register_blueprint(criar_edicao_routes(rascunho_service))
+    app.register_blueprint(criar_regra_routes(regra_service))
+    app.register_blueprint(criar_anotacao_routes(anotacao_service))
+    app.register_blueprint(criar_projeto_routes(projeto_service))
+    app.register_blueprint(criar_perfis_routes(projeto_service))
+    app.register_blueprint(criar_repo_routes(repo_service))
+    # Frontend estatico por ultimo (so pega "/" e "/assets/...", sem
+    # sombrear /api/* nem /health).
+    app.register_blueprint(criar_frontend_routes())
+
+    # Disponibiliza para testes (substituicao de adapters).
+    app.config["validador_github"] = validador_github
+    app.config["publicador_pr"] = publicador_pr
+    app.config["notificador_comentario"] = notificador_comentario
+    app.config["navegacao_service"] = navegacao_service
+    app.config["adr_service"] = adr_service
+    app.config["rascunho_service"] = rascunho_service
+    app.config["regra_service"] = regra_service
+    app.config["anotacao_service"] = anotacao_service
+    app.config["projeto_service"] = projeto_service
+    app.config["repo_service"] = repo_service
+    app.config["repositorio_adrs"] = repositorio_adrs
+    app.config["repositorio_rascunhos"] = repositorio_rascunhos
+    app.config["repositorio_regras"] = repositorio_regras
+    app.config["repositorio_anotacoes"] = repositorio_anotacoes
+
+    return app

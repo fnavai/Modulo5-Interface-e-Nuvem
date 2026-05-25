@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Módulo 5 · Portal</title>
+  <meta name="description" content="Portal unificado do Módulo 5 — engenharia reversa: diagrama + estrutura + qualidade + ownership, com relatório/apresentação baixáveis." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="aurora" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand__mark">M5</div>
+      <div class="brand__txt">
+        <h1>Módulo 5 <span>· Portal</span></h1>
+        <p>Documentação inteligente — Interface · Perfis · IA · Gerador</p>
+      </div>
+    </div>
+    <div id="global-pill" class="pill pill--loading" title="Estado agregado">
+      <span class="dot"></span><span id="global-pill-txt">verificando…</span>
+    </div>
+  </header>
+
+  <nav class="modnav" aria-label="Ecossistema de módulos Mackenzie">
+    <a class="modnav__item" href="#" title="URL pendente — aguardando deploy do grupo 1" aria-disabled="true">
+      <svg class="modnav__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="modnav__txt">Projetos &amp; Usuários</span>
+      <span class="modnav__badge modnav__badge--pending">em breve</span>
+    </a>
+    <a class="modnav__item" href="https://mod2eng.azurewebsites.net/" target="_blank" rel="noopener noreferrer" title="Módulo 2 — Ingestão e Gerenciamento de Dados">
+      <svg class="modnav__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/></svg>
+      <span class="modnav__txt">Ingestão</span>
+      <svg class="modnav__ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+    <a class="modnav__item" href="https://moduloderelatorios.azurewebsites.net/" target="_blank" rel="noopener noreferrer" title="Módulo 3 — Relatórios estruturados (PDF/MD/DOCX)">
+      <svg class="modnav__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <span class="modnav__txt">Relatórios</span>
+      <svg class="modnav__ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
+    <a class="modnav__item" href="#" title="URL pendente — aguardando deploy do grupo 4" aria-disabled="true">
+      <svg class="modnav__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+      <span class="modnav__txt">Apresentações</span>
+      <span class="modnav__badge modnav__badge--pending">em breve</span>
+    </a>
+    <a class="modnav__item modnav__item--current" href="/" aria-current="page" title="Você está no Módulo 5 — Diagramas Técnicos / Engenharia Reversa">
+      <svg class="modnav__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>
+      <span class="modnav__txt">Diagramas Técnicos</span>
+      <span class="modnav__badge modnav__badge--current">você está aqui</span>
+    </a>
+    <a class="modnav__item" href="#" title="URL pendente — aguardando deploy do grupo 6" aria-disabled="true">
+      <svg class="modnav__ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="modnav__txt">Consulta</span>
+      <span class="modnav__badge modnav__badge--pending">em breve</span>
+    </a>
+  </nav>
+
+  <main>
+    <!-- Saúde: faixa fina e secundária (mostra a integração viva) -->
+    <section class="strip" aria-labelledby="saude-h">
+      <div class="strip__head">
+        <h2 id="saude-h">Serviços integrados</h2>
+        <span id="saude-updated" class="muted small">—</span>
+      </div>
+      <div id="health-grid" class="health-grid health-grid--compact">
+        <div class="skeleton"></div><div class="skeleton"></div>
+        <div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+    </section>
+
+    <!-- Hero: a análise é o protagonista, roda sozinha ao abrir -->
+    <section class="card" aria-labelledby="analisar-h">
+      <div class="card__head">
+        <h2 id="analisar-h">Análise de engenharia reversa</h2>
+        <span class="muted small">repo · branch · arquivo → diagrama + estrutura + qualidade + ownership</span>
+      </div>
+
+      <div class="tabs" role="tablist" id="tabs-diagrama">
+        <button type="button" class="tab tab--active" data-tipo="classe" role="tab">UML · Classe</button>
+        <button type="button" class="tab" data-tipo="sequencia" role="tab">UML · Sequência</button>
+        <button type="button" class="tab" data-tipo="caso_de_uso" role="tab">UML · Casos de Uso</button>
+        <button type="button" class="tab" data-tipo="nuvem" role="tab">Arquitetura de Nuvem</button>
+        <button type="button" class="tab" data-tipo="perfis" role="tab">Perfis de Usuário</button>
+      </div>
+
+      <form id="form" class="form" autocomplete="off">
+        <div class="field">
+          <label for="repositorio">Repositório <span class="req">*</span></label>
+          <div class="repo-row">
+            <input id="repositorio" name="repositorio" placeholder="owner/repo (ex.: fnavai/Modulo5-Interface-e-Nuvem)"
+                   value="fnavai/Modulo5-Interface-e-Nuvem" required />
+            <button id="btn-carregar" type="button" class="btn btn--soft">
+              <span class="btn__txt">↻ Carregar</span>
+              <span class="btn__spin" hidden></span>
+            </button>
+          </div>
+        </div>
+        <div class="field field--sm">
+          <label for="branch">Branch</label>
+          <select id="branch" name="branch">
+            <option value="develop" selected>develop</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="caminho">Arquivo <span class="req">*</span></label>
+          <select id="caminho" name="caminho" required>
+            <option value="app/application/services/projeto_service_impl.py" selected>app/application/services/projeto_service_impl.py</option>
+          </select>
+        </div>
+        <button id="submit" type="submit" class="btn">
+          <span class="btn__txt">Analisar</span>
+          <span class="btn__spin" hidden></span>
+        </button>
+      </form>
+      <div id="carregar-status" class="muted small" style="margin-top:8px"></div>
+
+      <div id="banner" class="banner" hidden></div>
+
+      <div id="result" class="result" hidden>
+        <div id="notices" class="notices"></div>
+
+        <!-- Barra de documentos baixáveis (módulos Relatórios/Apresentações) -->
+        <div class="docbar">
+          <span class="docbar__lbl">Documentação do projeto:</span>
+          <button id="btn-pptx" class="btn btn--soft" type="button">
+            <span class="btn__txt">⬇ Apresentação .pptx</span>
+            <span class="btn__spin" hidden></span>
+          </button>
+          <span class="docbar__sep"></span>
+          <select id="sel-formato" class="select" title="Formato do relatório">
+            <option value="pdf">PDF</option>
+            <option value="docx">DOCX</option>
+            <option value="md">Markdown</option>
+          </select>
+          <button id="btn-relatorio" class="btn btn--soft" type="button">
+            <span class="btn__txt">⬇ Relatório</span>
+            <span class="btn__spin" hidden></span>
+          </button>
+          <span id="dl-status" class="docbar__status muted small"></span>
+        </div>
+
+        <div class="panels">
+          <article class="panel panel--diagram">
+            <div class="panel__head">
+              <h3 id="diagram-title">Diagrama</h3>
+              <button id="toggle-src" class="link" type="button">ver fonte</button>
+            </div>
+            <div id="diagram" class="diagram"></div>
+            <pre id="diagram-src" class="code" hidden></pre>
+          </article>
+
+          <aside class="side">
+            <article class="panel">
+              <div class="panel__head"><h3>Resumo da IA</h3></div>
+              <div id="resumo" class="kv"></div>
+            </article>
+            <article class="panel">
+              <div class="panel__head"><h3>Qualidade do código</h3></div>
+              <div id="qualidade" class="kv"></div>
+            </article>
+            <article class="panel">
+              <div class="panel__head"><h3>Ownership</h3></div>
+              <div id="ownership" class="kv"></div>
+            </article>
+          </aside>
+        </div>
+      </div>
+
+      <div id="empty" class="empty">
+        <div class="empty__icon">◇</div>
+        <p>Carregando a análise de exemplo…</p>
+        <p class="muted small">O Gerador busca o código no GitHub, a IA extrai estrutura e qualidade, o Perfis anexa o ownership.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>Módulo 5 — plataforma de documentação inteligente</span>
+    <span class="muted">Gerador → GitHub → IA · Perfis · degradação graciosa</span>
+  </footer>
+
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>
